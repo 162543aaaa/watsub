@@ -10,6 +10,11 @@ export enum Priority {
   HIGH = 'HIGH'
 }
 
+export enum TaskCategory {
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL'
+}
+
 export interface Task {
   id: string;
   projectId: string;
@@ -18,6 +23,16 @@ export interface Task {
   status: TaskStatus;
   priority: Priority;
   createdAt: string;
+  
+  // New fields based on user request
+  category: TaskCategory;
+  assignee?: string; // User name or role
+  link?: string; // External link
+  startDate?: string; // ISO Date
+  dueDate?: string; // Expected finish date
+  completedDate?: string; // Actual finish date
+  publishDate?: string; // Publish date
+  notes?: string;
 }
 
 export interface Project {
@@ -25,15 +40,18 @@ export interface Project {
   name: string;
   description: string;
   createdAt: string;
-  color: string; // Tailwind color class fragment like 'blue', 'red', 'emerald'
+  color: string; 
 }
 
 export interface AIProjectProposal {
   name: string;
   description: string;
+  category: TaskCategory;
   tasks: {
     title: string;
     description: string;
     priority: Priority;
+    assignee?: string;
+    estimatedDays?: number;
   }[];
 }

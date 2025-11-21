@@ -1,18 +1,20 @@
 import React from 'react';
 import { Project } from '../types';
-import { LayoutDashboard, FolderKanban, Plus, Command } from 'lucide-react';
+import { LayoutDashboard, Plus, Command, Briefcase, Globe } from 'lucide-react';
 
 interface SidebarProps {
   projects: Project[];
   activeProjectId: string | null;
-  onSelectProject: (id: string | null) => void;
+  activeView: 'dashboard' | 'internal' | 'external' | 'project';
+  onSelectView: (view: 'dashboard' | 'internal' | 'external', projectId?: string) => void;
   onOpenAIModal: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   projects, 
   activeProjectId, 
-  onSelectProject,
+  activeView,
+  onSelectView,
   onOpenAIModal
 }) => {
   
@@ -38,18 +40,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto py-6 px-3">
-        <div className="mb-6">
-          <h3 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Overview</h3>
+        <div className="mb-6 space-y-1">
+          <h3 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Workspace</h3>
           <button 
-            onClick={() => onSelectProject(null)}
+            onClick={() => onSelectView('dashboard')}
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeProjectId === null 
+              activeView === 'dashboard'
                 ? 'bg-brand-50 text-brand-700' 
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
+          </button>
+          <button 
+            onClick={() => onSelectView('internal')}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeView === 'internal'
+                ? 'bg-brand-50 text-brand-700' 
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`}
+          >
+            <Briefcase className="w-4 h-4" />
+            งานภายใน (Internal)
+          </button>
+          <button 
+            onClick={() => onSelectView('external')}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeView === 'external'
+                ? 'bg-brand-50 text-brand-700' 
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`}
+          >
+            <Globe className="w-4 h-4" />
+            งานภายนอก (External)
           </button>
         </div>
 
@@ -61,9 +85,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {projects.map((project) => (
               <button
                 key={project.id}
-                onClick={() => onSelectProject(project.id)}
+                onClick={() => onSelectView('project', project.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeProjectId === project.id 
+                  activeView === 'project' && activeProjectId === project.id 
                     ? 'bg-brand-50 text-brand-700' 
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}

@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AIProjectProposal, Priority } from "../types";
+import { AIProjectProposal, Priority, TaskCategory } from "../types";
 
 const getClient = () => {
   const apiKey = process.env.API_KEY;
@@ -15,14 +15,16 @@ export const generateProjectPlan = async (userPrompt: string): Promise<AIProject
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: `Act as a senior project manager. Create a structured project plan based on this request: "${userPrompt}". 
-    Break it down into actionable tasks with priorities. Keep task descriptions concise.`,
+    Determine if this is strictly an internal project or external client work.
+    Break it down into actionable tasks with priorities, suggested assignees (by role), and estimated duration in days.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
           name: { type: Type.STRING, description: "A short, catchy name for the project" },
-          description: { type: Type.STRING, description: "A brief executive summary of the project" },
+          description: { type: Type.STRING, description: "A brief executive summary" },
+          category: { type: Type.STRING, enum: [TaskCategory.INTERNAL, TaskCategory.EXTERNAL] },
           tasks: {
             type: Type.ARRAY,
             items: {
@@ -30,13 +32,15 @@ export const generateProjectPlan = async (userPrompt: string): Promise<AIProject
               properties: {
                 title: { type: Type.STRING },
                 description: { type: Type.STRING },
-                priority: { type: Type.STRING, enum: [Priority.LOW, Priority.MEDIUM, Priority.HIGH] }
+                priority: { type: Type.STRING, enum: [Priority.LOW, Priority.MEDIUM, Priority.HIGH] },
+                assignee: { type: Type.STRING, description: "Job role e.g. Designer, Developer" },
+                estimatedDays: { type: Type.INTEGER, description: "Estimated days to complete" }
               },
-              required: ["title", "priority"]
+              required: ["title", "priority", "assignee"]
             }
           }
         },
-        required: ["name", "description", "tasks"]
+        required: ["name", "description", "tasks", "category"]
       }
     }
   });
