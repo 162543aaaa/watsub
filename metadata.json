@@ -1,0 +1,5 @@
+{
+  "name": "PlanAI - Smart Project Tracker",
+  "description": "A modern, AI-powered project management and task tracking dashboard. It uses Gemini to generate project plans, breakdown tasks, and visualize progress.",
+  "requestFramePermissions": []
+}
